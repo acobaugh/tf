@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "k8s-dev-config" {
 }
 
 module "k8s" {
-  source = "/home/acobaugh/code.d/tf-k8s-aws"
+  source = "../../tf-k8s-aws"
 
   cluster_name = "k8s-dev"
   cluster_fqdn = "k8s-dev.aws.cobaugh.io"
