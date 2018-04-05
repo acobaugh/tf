@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "../../terraform-aws-vpc"
+  source = "../../../../../terraform-aws-vpc"
 
   name = "dev"
   cidr = "10.0.0.0/16"

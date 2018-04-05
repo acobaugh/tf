@@ -3,7 +3,6 @@ resource "aws_s3_bucket" "k8s-dev-config" {
   acl    = "private"
 
   tags {
-    Environment = "${var.env}"
     Terraform   = true
   }
 }
@@ -14,16 +13,16 @@ module "k8s" {
   cluster_name = "k8s-dev"
   cluster_fqdn = "k8s-dev.aws.cobaugh.io"
 
-	pod_cidr = "10.128.0.0/18"
-	service_cidr = "10.128.64.0/18"
+  pod_cidr     = "10.128.0.0/18"
+  service_cidr = "10.128.64.0/18"
 
   vpc_id           = "${module.vpc.vpc_id}"
   vpc_ig_id        = "${module.vpc.igw_id}"
   vpc_subnet_cidrs = ["10.0.253.0/24", "10.0.254.0/24", "10.0.255.0/24"]
   azs              = ["us-east-2a", "us-east-2b", "us-east-2c"]
-	
-	vpc_ipv6_cidr_block = "${module.vpc.vpc_ipv6_cidr_block}"
-	ipv6_subnet_offset = 100
+
+  vpc_ipv6_cidr_block = "${module.vpc.vpc_ipv6_cidr_block}"
+  ipv6_subnet_offset  = 100
 
   config_s3_bucket = "${aws_s3_bucket.k8s-dev-config.id}"
 
