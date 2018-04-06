@@ -3,7 +3,7 @@ terragrunt = {
     backend = "s3"
 
     config {
-      bucket  = "acobaugh-tfstate-dev-us-east-1"
+      bucket  = "acobaugh-tfstate-dev-global"
       region  = "us-east-1"
       key     = "${path_relative_to_include()}/terraform.tfstate"
       encrypt = true
@@ -12,11 +12,13 @@ terragrunt = {
 
   terraform {
     extra_arguments "common_vars" {
-      commands = ["${get_terraform_commands_that_need_vars()}"]
+      commands = ["init","${get_terraform_commands_that_need_vars()}"]
 
       optional_var_files = [
-        "${find_in_parent_folders("account.tfvars", "ignore")}",
-        "${find_in_parent_folders("region.tfvars", "ignore")}",
+        "${get_parent_tfvars_dir()}/${path_relative_from_include()}/account.tfvars",
+        "${get_parent_tfvars_dir()}/${path_relative_from_include()}/region.tfvars",
+        "${get_tfvars_dir()}/${path_relative_from_include()}/account.tfvars",
+        "${get_tfvars_dir()}/${path_relative_from_include()}/region.tfvars",
       ]
     }
   }
