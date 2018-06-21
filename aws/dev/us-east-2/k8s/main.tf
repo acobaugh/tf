@@ -1,9 +1,21 @@
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+
+  config {
+    bucket = "acobaugh-tfstate-dev-${var.region}"
+    key    = "vpc/terraform.tfstate"
+    region = "${var.region}"
+  }
+}
+
+variable "route53_zone_id" {}
+
 resource "aws_s3_bucket" "k8s-dev-config" {
-  bucket = "${var.bucket_prefix}-k8s-dev-config"
+  bucket = "acobaugh-k8s-dev-config-${var.region}"
   acl    = "private"
 
   tags {
-    Terraform   = true
+    Terraform = true
   }
 }
 
@@ -16,12 +28,12 @@ module "k8s" {
   pod_cidr     = "10.128.0.0/18"
   service_cidr = "10.128.64.0/18"
 
-  vpc_id           = "${module.vpc.vpc_id}"
-  vpc_ig_id        = "${module.vpc.igw_id}"
+  vpc_id           = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_ig_id        = "${data.terraform_remote_state.vpc.igw_id}"
   vpc_subnet_cidrs = ["10.0.253.0/24", "10.0.254.0/24", "10.0.255.0/24"]
   azs              = ["us-east-2a", "us-east-2b", "us-east-2c"]
 
-  vpc_ipv6_cidr_block = "${module.vpc.vpc_ipv6_cidr_block}"
+  vpc_ipv6_cidr_block = "${data.terraform_remote_state.vpc.vpc_ipv6_cidr_block}"
   ipv6_subnet_offset  = 100
 
   config_s3_bucket = "${aws_s3_bucket.k8s-dev-config.id}"
