@@ -1,3 +1,7 @@
+locals {
+  cluster_name = "test"
+}
+
 module "vpc" {
   source = "git::https://github.com/acobaugh/terraform-aws-vpc.git?ref=feature/ipv6"
 
@@ -14,14 +18,15 @@ module "vpc" {
   enable_dns_hostnames = true
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
+    Terraform                                     = "true"
+    Environment                                   = "dev"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
   }
 }
 
 module "eks" {
   source       = "terraform-aws-modules/eks/aws"
-  cluster_name = "test"
+  cluster_name = "${local.cluster_name}"
   subnets      = "${module.vpc.public_subnets}"
 
   tags = {
